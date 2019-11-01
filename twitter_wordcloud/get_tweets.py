@@ -7,11 +7,15 @@ CONSUMER_SECRET = os.environ.get('TWITTER_CONSUMER_SECRET')
 ACCESS_TOKEN = os.environ.get('TWITTER_ACCESS_TOKEN')
 ACCESS_TOKEN_SECRET = os.environ.get('TWITTER_TOKEN_SECRET')
 
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-api = tweepy.API(auth)
+def authorise():
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    api = tweepy.API(auth)
+    return api
 
 def get_tweets(username):
+
+    api = authrise()
 
     for tweet in tweepy.Cursor(api.user_timeline, id=username, tweet_mode='extended', exclude_replies=True, include_rts=False).items():
         tweets_for_csv.append([tweet.id_str, tweet.created_at, tweet.full_text.encode("utf-8")])
