@@ -31,7 +31,9 @@ def clean_data(path):
         df = df.replace(to_replace=replace_regex, value='', regex=True)
 
     output_path = path[:-4] + "_clean.csv"
-    df.to_csv(output_path)
+    df.to_csv(output_path, index=False)
+    print(output_path)
+    return output_path
 
 def main():
     path = "CNN_tweets.csv"

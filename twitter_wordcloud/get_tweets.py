@@ -13,12 +13,20 @@ def authorise():
     api = tweepy.API(auth)
     return api
 
-def get_tweets(username):
+def get_tweets(username, num_tweets):
 
-    api = authrise()
+    api = authorise()
+    tweets_for_csv = []
 
-    for tweet in tweepy.Cursor(api.user_timeline, id=username, tweet_mode='extended', exclude_replies=True, include_rts=False).items():
-        tweets_for_csv.append([tweet.id_str, tweet.created_at, tweet.full_text.encode("utf-8")])
+    for tweet in tweepy.Cursor(api.user_timeline,
+                                id=username,
+                                tweet_mode='extended',
+                                exclude_replies=True,
+                                include_rts=False).items(num_tweets):
+
+        tweets_for_csv.append([tweet.id_str,
+                                tweet.created_at,
+                                tweet.full_text.encode("utf-8")])
 
     csv_path = f"{username}_tweets.csv"
 
@@ -26,6 +34,9 @@ def get_tweets(username):
         writer = csv.writer(f)
         writer.writerow(["id","created_at", "text"])
         writer.writerows(tweets_for_csv)
+
+    print(csv_path)
+    return csv_path
 
 def main():
     get_tweets('CNN')
