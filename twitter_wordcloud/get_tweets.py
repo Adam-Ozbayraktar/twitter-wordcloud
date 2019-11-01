@@ -13,30 +13,40 @@ def authorise():
     api = tweepy.API(auth)
     return api
 
-def get_tweets(username, num_tweets):
+def get_tweets(username, num_tweets, csv_path):
+    file_name = f"{username}_tweets.csv"
+    output_csv_path = os.path.join(csv_path, file_name)
+    # print(os.path.exists(output_csv_path))
+    if not os.path.exists(output_csv_path):
+        api = authorise()
+        tweets_for_csv = []
 
-    api = authorise()
-    tweets_for_csv = []
+        for tweet in tweepy.Cursor(api.user_timeline,
+                                    id=username,
+                                    tweet_mode='extended',
+                                    exclude_replies=True,
+                                    include_rts=False).items(num_tweets):
 
-    for tweet in tweepy.Cursor(api.user_timeline,
-                                id=username,
-                                tweet_mode='extended',
-                                exclude_replies=True,
-                                include_rts=False).items(num_tweets):
-
-        tweets_for_csv.append([tweet.id_str,
+            tweets_for_csv.append([tweet.id_str,
                                 tweet.created_at,
                                 tweet.full_text.encode("utf-8")])
 
-    csv_path = f"{username}_tweets.csv"
+    # file_name = f"{username}_tweets.csv"
+    # output_csv_path = os.path.join(csv_path, file_name)
 
-    with open(csv_path, 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(["id","created_at", "text"])
-        writer.writerows(tweets_for_csv)
+        with open(output_csv_path, 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(["id","created_at", "text"])
+            writer.writerows(tweets_for_csv)
 
-    print(csv_path)
-    return csv_path
+        print(output_csv_path)
+        # return output_csv_path
+
+    else:
+        print(f'File: "{output_csv_path}", already exists')
+        # return output_csv_path
+
+    return output_csv_path
 
 def main():
     get_tweets('CNN')
